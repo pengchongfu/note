@@ -25,3 +25,12 @@
 - 保存在内存中，gob格式
 
 ## code
+endpoint 函数声明
+```
+type Endpoint func(ctx context.Context, request interface{}) (metadata metadata.Metadata, response interface{}, err error)
+```
+
+middleware 函数声明
+```
+type Middleware func(Meta, Endpoint) Endpoint
+```
