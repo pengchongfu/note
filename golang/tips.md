@@ -466,7 +466,7 @@ func (o *once) Do(f func()) {
 	defer o.Unlock()
 	if o.done == 0 {
 		f()
-		atomic.StoreUint32(&o.done, 1)
+		atomic.StoreUint32(&o.done, 1) // 这里为临界区，为了避免与之前的读操作并发读写，必须用原子操作
 	}
 }
 ```
@@ -662,5 +662,23 @@ func main() {
 		v := <-c
 		fmt.Println(v)
 	}
+}
+```
+
+## 一个 goroutine panic 整个进程会退出，只能在 panic 的 goroutine 内部 recover，goroutine 之间不会有父子关系
+```
+package main
+
+import (
+	"fmt"
+	"time"
+)
+
+func main() {
+	go func() {
+		panic("process would crach")
+	}()
+	time.Sleep(time.Second)
+	fmt.Println("done")
 }
 ```
